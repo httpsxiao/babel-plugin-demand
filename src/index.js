@@ -1,27 +1,28 @@
-import { applyInstance } from './utils'
-
-demand_global.specifier = Object.create(null)
-  demand_global.packageObjs = Object.create(null);
-  demand_global.selectedMethods = Object.create(null);
-  demand_global.removePaths = [];
+import { transSpecified } from './utils'
 
 export default function ({ types }) {
-  let specifier = Object.create(null)
+  let specified = Object.create(null)
   let packageObjs = Object.create(null)
+  let targetCallee = Object.create(null)
   let removePaths = []
-  let packageName = ''
+
+  const Program = {
+    enter(path, { opts = {} }) {
+    },
+    exit() {
+      removePaths.forEach(path => !path.removed && path.remove())
+    }
+  }
 
   const visitor = {
-    enter(path, { opts = {} }) {
-      packageName = opts.packageName
-    },
+    Program,
     ImportDeclaration(path, state) {
       const { node } = path
       const { value } = node.source
-      if (value === packageName) {
+      if (value === state.opts.packageName) {
         node.specifiers.forEach(spec => {
           if (types.isImportSpecifier(spec)) {
-            specifier[spec.local.name] = spec.imported.name
+            specified[spec.local.name] = spec.imported.name
           } else {
             packageObjs[spec.local.name] = true
           }
@@ -29,8 +30,29 @@ export default function ({ types }) {
         removePaths.push(path)
       }
     },
-    exit() {
-    }
+    CallExpression(path, state) {
+      const { node } = path
+      const { name } = node.callee
+      const file = (path && path.hub && path.hub.file) || (state && state.file)
+
+      if (types.isIdentifier(node.callee)) {
+        if (specified[name]) {
+          node.callee = transSpecified(specified[name], file, targetCallee, state.opts)
+        }
+      }
+
+      node.arguments = node.arguments.map(arg => {
+        const { name: argName } = arg
+        if (
+          specified[argName] &&
+          path.scope.hasBinding(argName) &&
+          path.scope.getBinding(argName).path.type === 'ImportSpecifier'
+        ) {
+          return transSpecified(specified[argName], file, specified)
+        }
+        return arg
+      })
+    },
   }
 
   return {
