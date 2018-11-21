@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "webpack --mode production",
-    "test": "jest --config test/jest.config.js"
+    "test": "jest --config test/jest.config.js",
+    "lint": "eslint --ext .js src"
   },
   "files": [
     "lib"
@@ -25,9 +26,6 @@
     "url": "https://github.com/httpsxiao/babel-plugin-demand/issues"
   },
   "homepage": "https://github.com/httpsxiao/babel-plugin-demand#readme",
-  "pre-commit": [
-    "lint"
-  ],
   "devDependencies": {
     "@babel/core": "^7.1.6",
     "babel-jest": "^23.6.0",
