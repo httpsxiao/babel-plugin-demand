@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-demand",
-  "version": "1.0.0-3",
+  "version": "1.0.1",
   "description": "按需加载babel插件",
   "main": "lib/index.js",
   "scripts": {

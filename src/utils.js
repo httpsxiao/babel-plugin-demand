@@ -6,7 +6,7 @@ const trunedMethod = Object.create(null)
 function turnSpecified (methodName, file, opts) {
   if (!trunedMethod[methodName]) {
     const packageName = opts.packageName
-    const redirect = opts.redirect
+    const redirect = opts.redirect || 'lib'
     const parsedName = parseName(methodName, opts.camel2Dash)
     const path = `${packageName}/${redirect}/${parsedName}`
 
