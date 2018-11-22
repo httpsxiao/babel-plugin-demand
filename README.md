@@ -1,4 +1,4 @@
-#babel-plugin-demand
+# babel-plugin-demand
 
 用于公共 js 库按需加载的babel插件
 
@@ -49,4 +49,4 @@ _foo()
 |:-----:|:-----:|:-----:|:-----:|:-----:|
 | packageName | js 包的名字 | String | 是 | 无 |
 | redirect | 函数所在的目录 | String | 否 | 'lib' |
-| camel2Dash | 驼峰文件名是否需要转为 '-' 连接 | Boolean | 否 | false |
+| camel2Dash | 驼峰文件名是否需要转为'-'连接 | Boolean | 否 | false |
