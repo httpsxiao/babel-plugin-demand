@@ -3,7 +3,7 @@ const plugin = require('@/index')
 
 var example = `
 import { a } from 'aa'
-let b = 1
+let b = a()
 `
 
 test('works', () => {

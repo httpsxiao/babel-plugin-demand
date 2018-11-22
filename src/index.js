@@ -7,16 +7,16 @@ export default function ({ types }) {
   let removePaths = []
 
   const Program = {
-    enter(path, { opts = {} }) {
+    enter (path, { opts = {} }) {
     },
-    exit() {
+    exit () {
       removePaths.forEach(path => !path.removed && path.remove())
     }
   }
 
   const visitor = {
     Program,
-    ImportDeclaration(path, state) {
+    ImportDeclaration (path, state) {
       const { node } = path
       const { value } = node.source
       if (value === state.opts.packageName) {
@@ -30,7 +30,7 @@ export default function ({ types }) {
         removePaths.push(path)
       }
     },
-    CallExpression(path, state) {
+    CallExpression (path, state) {
       const { node } = path
       const { name } = node.callee
       const file = (path && path.hub && path.hub.file) || (state && state.file)
@@ -48,11 +48,11 @@ export default function ({ types }) {
           path.scope.hasBinding(argName) &&
           path.scope.getBinding(argName).path.type === 'ImportSpecifier'
         ) {
-          return transSpecified(specified[argName], file, specified)
+          return transSpecified(specified[argName], file, targetCallee, state.opts)
         }
         return arg
       })
-    },
+    }
   }
 
   return {
