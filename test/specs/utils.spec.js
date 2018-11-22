@@ -2,11 +2,13 @@ const babel = require('@babel/core')
 const plugin = require('@/index')
 
 var example = `
-import { a } from 'aa'
-let b = a()
+  import { a as dd } from 'aa'
+  let c = dd()
+  let b = dd
+  let d = [dd, 'aa']
 `
 
-test('works', () => {
+test ('works', () => {
   const code = babel.transform(example, {
     plugins: [
       [
@@ -18,5 +20,7 @@ test('works', () => {
       ]
     ]
   }).code
-  expect(code).toEqual('let b = 1;')
-});
+  expect (code).toEqual(
+    ''
+  )
+})

@@ -1,9 +1,8 @@
-import { transSpecified } from './utils'
+import { turnSpecified, expressionHandler, isGlobalScope } from './utils'
 
 export default function ({ types }) {
   let specified = Object.create(null)
   let packageObjs = Object.create(null)
-  let targetCallee = Object.create(null)
   let removePaths = []
 
   const Program = {
@@ -37,7 +36,7 @@ export default function ({ types }) {
 
       if (types.isIdentifier(node.callee)) {
         if (specified[name]) {
-          node.callee = transSpecified(specified[name], file, targetCallee, state.opts)
+          node.callee = turnSpecified(specified[name], file, state.opts)
         }
       }
 
@@ -48,10 +47,65 @@ export default function ({ types }) {
           path.scope.hasBinding(argName) &&
           path.scope.getBinding(argName).path.type === 'ImportSpecifier'
         ) {
-          return transSpecified(specified[argName], file, targetCallee, state.opts)
+          return turnSpecified(specified[argName], file, state.opts)
         }
         return arg
       })
+    },
+    MemberExpression (path, state) {
+      const { node } = path
+      const file = (path && path.hub && path.hub.file) || (state && state.file)
+      if (!node.object || !node.object.name) { return }
+
+      if (packageObjs[node.object.name]) {
+        path.replaceWith(turnSpecified(node.property.name, file, state.opts))
+      } else if (specified[node.object.name]) {
+        node.object = turnSpecified(specified[node.object.name], file, state.opts)
+      }
+    },
+    VariableDeclarator (path, state) {
+      expressionHandler(path, state, types, specified, ['init'])
+    },
+    Property (path, state) {
+      expressionHandler(path, state, types, specified, ['value'])
+    },
+    ArrayExpression (path, state) {
+      const props = path.node.elements.map((p, index) => index)
+      expressionHandler(path, state, types, specified, props, path.node.elements)
+    },
+    AssignmentExpression (path, state) {
+      expressionHandler(path, state, types, specified, ['right'])
+    },
+    LogicalExpression (path, state) {
+      expressionHandler(path, state, types, specified, ['left', 'right'])
+    },
+    ConditionalExpression (path, state) {
+      expressionHandler(path, state, types, specified, ['test', 'consequent', 'alternate'])
+    },
+    IfStatement (path, state) {
+      expressionHandler(path, state, types, specified, ['test'])
+    },
+    ExportDefaultDeclaration (path, state) {
+      expressionHandler(path, state, types, specified, ['declaration'])
+    },
+    BinaryExpression (path, state) {
+      expressionHandler(path, state, types, specified, ['left', 'right'])
+    },
+    NewExpression (path, state) {
+      expressionHandler(path, state, types, specified, ['callee', 'arguments'])
+    },
+    ReturnStatement (path, state) {
+      const { node } = path
+      const file = (path && path.hub && path.hub.file) || (state && state.file)
+
+      if (
+        node.argument &&
+        types.isIdentifier(node.argument) &&
+        specified[node.argument.name] &&
+        isGlobalScope(path, specified[node.argument.name])
+      ) {
+        node.argument = turnSpecified(specified[node.argument.name], file, state.opts)
+      }
     }
   }
 
