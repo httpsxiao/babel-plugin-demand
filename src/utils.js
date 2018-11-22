@@ -1,4 +1,4 @@
-import { addDefault } from '@babel/helper-module-imports'
+const { addDefault } = require('@babel/helper-module-imports')
 // const isExist = require('fs').existsSync
 
 const trunedMethod = Object.create(null)
@@ -43,7 +43,7 @@ function isGlobalScope (path, name) {
   return !!parentPath && parentPath.isProgram()
 }
 
-export {
+module.exports = {
   turnSpecified,
   expressionHandler,
   isGlobalScope

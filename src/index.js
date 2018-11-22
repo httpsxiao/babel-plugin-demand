@@ -1,6 +1,6 @@
-import { turnSpecified, expressionHandler, isGlobalScope } from './utils'
+const { turnSpecified, expressionHandler, isGlobalScope } = require('./utils')
 
-export default function ({ types }) {
+module.exports = function ({ types }) {
   let specified = Object.create(null)
   let packageObjs = Object.create(null)
   let removePaths = []

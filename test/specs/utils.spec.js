@@ -2,9 +2,10 @@ const babel = require('@babel/core')
 const plugin = require('@/index')
 
 var example = `
-  import { a as dd } from 'aa'
+  import { a as dd, www } from 'aa'
   let c = dd()
   let b = dd
+  let w = www
   let d = [dd, 'aa']
 `
 
