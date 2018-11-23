@@ -52,4 +52,6 @@ _foo()
 | moreRedirect | Array<String> | 当`redirect`目录不存在时,自动检索该数组中的路径 | 否 | [] |
 | camel2Dash | Boolean | 驼峰文件名是否需要转为'-'连接 | 否 | false |
 
-更多 babel 信息可查看 [https://github.com/httpsxiao/babel-plugin-demand/tree/master/doc/estree.md](https://github.com/httpsxiao/babel-plugin-demand/tree/master/doc/estree.md)
+### more
+
+* 编译过程中 ast 的 types 可以参考doc文件下的 [ast-types](https://github.com/httpsxiao/babel-plugin-demand/tree/master/doc/ast-types.md)

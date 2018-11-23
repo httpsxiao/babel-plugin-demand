@@ -1,4 +1,4 @@
-const { turnSpecified, expressionHandler, isGlobalScope } = require('./utils')
+const { turnSpecified, expressionHandler, isGlobalScope } = require('./helper')
 
 module.exports = function ({ types }) {
   let specified = Object.create(null)
