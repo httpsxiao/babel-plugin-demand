@@ -45,8 +45,11 @@ _foo()
 
 ### options
 
-|参数名称|含义|类型|是否必填|默认值|
+|参数名称|类型|含义|是否必填|默认值|
 |:-----:|:-----:|:-----:|:-----:|:-----:|
-| packageName | js 包的名字 | String | 是 | 无 |
-| redirect | 函数所在的目录 | String | 否 | 'lib' |
-| camel2Dash | 驼峰文件名是否需要转为'-'连接 | Boolean | 否 | false |
+| packageName | String | js 包的名字 | 是 | 无 |
+| redirect | String | 函数所在的目录 | 否 | 'lib' |
+| moreRedirect | Array<String> | 当`redirect`目录不存在时,自动检索该数组中的路径 | 否 | [] |
+| camel2Dash | Boolean | 驼峰文件名是否需要转为'-'连接 | 否 | false |
+
+更多 babel 信息可查看 [https://github.com/httpsxiao/babel-plugin-demand/tree/master/doc/estree.md](https://github.com/httpsxiao/babel-plugin-demand/tree/master/doc/estree.md)

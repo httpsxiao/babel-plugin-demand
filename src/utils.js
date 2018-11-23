@@ -1,14 +1,35 @@
 const { addDefault } = require('@babel/helper-module-imports')
-// const isExist = require('fs').existsSync
+const { existsSync } = require('fs')
+const { join } = require('path')
 
 const trunedMethod = Object.create(null)
+
+function parseName (name, camel2Dash) {
+  if (!camel2Dash) { return name }
+  const transName = name[0].toLowerCase() + name.substr(1)
+  return transName.replace(/[A-Z]/g, $1 => `-${$1.toLowerCase()}`)
+}
+
+function isExist (path, ext = 'js') {
+  return existsSync(join(__dirname, '../..', `${path}.${ext}`))
+}
 
 function turnSpecified (methodName, file, opts) {
   if (!trunedMethod[methodName]) {
     const packageName = opts.packageName
     const redirect = opts.redirect || 'lib'
+    const moreRedirect = opts.moreRedirect || []
     const parsedName = parseName(methodName, opts.camel2Dash)
-    const path = `${packageName}/${redirect}/${parsedName}`
+    let path = `${packageName}/${redirect}/${parsedName}`
+
+    if (!isExist(path) && !!moreRedirect.length) {
+      moreRedirect.some(item => {
+        if (isExist(`${packageName}/${item}/${parsedName}`)) {
+          path = `${packageName}/${item}/${parsedName}`
+          return true
+        }
+      })
+    }
 
     trunedMethod[methodName] = addDefault(file.path, path, { nameHint: methodName })
   }
@@ -30,12 +51,6 @@ function expressionHandler (path, state, types, specified, props, element) {
       node[prop] = turnSpecified(specified[node[prop].name], file, state.opts)
     }
   })
-}
-
-function parseName (name, camel2Dash) {
-  if (!camel2Dash) { return name }
-  const transName = name[0].toLowerCase() + name.substr(1)
-  return transName.replace(/[A-Z]/g, $1 => `-${$1.toLowerCase()}`)
 }
 
 function isGlobalScope (path, name) {
